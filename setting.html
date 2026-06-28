@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统设置 - StudyHelper</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://jsdelivr.net"></script>
+    <!-- FontAwesome 图标 -->
+    <link rel="stylesheet" href="https://cloudflare.com">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col transition-colors duration-300 dark:bg-slate-900 dark:text-slate-100">
+
+    <!-- 顶部导航栏 -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 dark:bg-slate-800 dark:border-slate-700 shadow-sm">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <a href="index.html" class="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200" title="返回首页">
+                    <i class="fa-solid fa-arrow-left text-lg"></i>
+                </a>
+                <i class="fa-solid fa-gear text-indigo-600 text-xl dark:text-indigo-400"></i>
+                <h1 class="text-lg font-bold tracking-tight text-slate-900 dark:text-white">系统控制中心</h1>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <button id="themeToggleBtn" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700 transition-colors" title="快捷切换主题">
+                    <i id="themeIcon" class="fa-solid fa-moon text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主体设置面板 -->
+    <main class="flex-1 max-w-3xl w-full mx-auto p-4 md:p-6 space-y-6">
+        
+        <!-- 1. 显示与主题设置 -->
+        <section class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm dark:bg-slate-800 dark:border-slate-700">
+            <div class="flex items-center space-x-2.5 mb-4">
+                <i class="fa-solid fa-palette text-indigo-500 text-lg"></i>
+                <h2 class="text-base font-bold text-slate-800 dark:text-white">个性化视效</h2>
+            </div>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3 bg-slate-50 rounded-xl dark:bg-slate-900/40">
+                <div>
+                    <h3 class="text-sm font-semibold">深色模式外观</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">调节网站全局色彩主题，保护夜间暗光环境下的视力。</p>
+                </div>
+                <div class="grid grid-cols-2 gap-2 w-full sm:w-48 shrink-0">
+                    <button id="setThemeLight" class="px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-all dark:bg-slate-800 dark:border-slate-700">
+                        <i class="fa-regular fa-sun mr-1"></i> 浅色
+                    </button>
+                    <button id="setThemeDark" class="px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-all dark:bg-slate-800 dark:border-slate-700">
+                        <i class="fa-regular fa-moon mr-1"></i> 暗黑
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. 本地数据备份与恢复中心 -->
+        <section class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm dark:bg-slate-800 dark:border-slate-700">
+            <div class="flex items-center space-x-2.5 mb-4">
+                <i class="fa-solid fa-database text-emerald-500 text-lg"></i>
+                <h2 class="text-base font-bold text-slate-800 dark:text-white">本地数据生命周期管理</h2>
+            </div>
+            <p class="text-xs text-slate-400 mb-4 leading-relaxed">由于本站属于纯静态应用，所有产生的数据均加密存储在当前浏览器的 LocalStorage 中。为了防止浏览器自动清理缓存或跨设备迁移需要，建议您定期备份数据。</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- 导出 -->
+                <div class="p-4 border border-slate-100 rounded-xl bg-slate-50/50 dark:border-slate-700/60 dark:bg-slate-900/20 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300">导出数据备份 (.json)</h3>
+                        <p class="text-xs text-slate-400 mt-1 mb-4">打包全站笔记、错题集、背词进度和规划表的最新快照并一键下载。</p>
+                    </div>
+                    <button id="exportDataBtn" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-medium py-2 rounded-lg transition-colors shadow-sm">
+                        <i class="fa-solid fa-download mr-1"></i> 执行完整导出
+                    </button>
+                </div>
+                
+                <!-- 导入 -->
+                <div class="p-4 border border-slate-100 rounded-xl bg-slate-50/50 dark:border-slate-700/60 dark:bg-slate-900/20 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300">导入历史备份覆盖恢复</h3>
+                        <p class="text-xs text-slate-400 mt-1 mb-4">选择本地先前导出的备份 json 文件，用以无缝还原或跨机同步数据。</p>
+                    </div>
+                    <label class="w-full bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-medium py-2 rounded-lg transition-colors shadow-sm text-center cursor-pointer block">
+                        <i class="fa-solid fa-upload mr-1"></i> 选择文件还原
+                        <input id="importFileFileInput" type="file" accept=".json" class="hidden">
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. 高危重置区域 -->
+        <section class="bg-white p-5 rounded-2xl border border-red-200 shadow-sm dark:bg-slate-800 dark:border-red-950/40">
+            <div class="flex items-center space-x-2.5 mb-4">
+                <i class="fa-solid fa-triangle-exclamation text-red-500 text-lg"></i>
+                <h2 class="text-base font-bold text-slate-800 dark:text-white">高危风险区域</h2>
+            </div>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3 bg-red-50/50 rounded-xl dark:bg-red-950/20">
+                <div class="max-w-md">
+                    <h3 class="text-sm font-semibold text-red-600 dark:text-red-400">一键清空本地所有存储缓存</h3>
+                    <p class="text-xs text-slate-400 mt-0.5 leading-relaxed">此项属于不可逆物理粉碎操作。清空后，您本机的全部笔记、题库、专注时长、日程都将被永远抹去。执行前请务必确认已经备份！</p>
+                </div>
+                <button id="purgeStorageBtn" class="bg-red-500 hover:bg-red-600 text-white text-xs font-medium py-2 px-4 rounded-lg transition-colors shrink-0 shadow-sm">
+                    <i class="fa-regular fa-trash-can mr-1"></i> 擦除全站缓存
+                </button>
+            </div>
+        </section>
+
+        <!-- 4. 网站关于与说明说明 -->
+        <section class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm dark:bg-slate-800 dark:border-slate-700 text-slate-500 dark:text-slate-400 space-y-3">
+            <div class="flex items-center space-x-2.5 text-slate-800 dark:text-white">
+                <i class="fa-solid fa-circle-info text-blue-500 text-lg"></i>
+                <h2 class="text-base font-bold">关于 StudyHelper</h2>
+            </div>
+            <p class="text-xs leading-relaxed select-text">
+                <b>StudyHelper</b> 是一款面向广大学子打造的轻量级纯静态学习辅助工作台。我们在底层架构中严格遵循“去服务器、零网络接口、隐私彻底自控”的产品设计理念。
+            </p>
+            <div class="grid grid-cols-2 gap-2 text-[11px] bg-slate-50 p-3 rounded-xl dark:bg-slate-900/50 leading-loose">
+                <div><i class="fa-solid fa-shield text-emerald-500 mr-1"></i> 数据安全：100% 宿主内隔离</div>
+                <div><i class="fa-solid fa-box text-blue-500 mr-1"></i> 运行模式：完全静态单页沙箱</div>
+                <div><i class="fa-solid fa-feather text-amber-500 mr-1"></i> 基础架构：原生 JS + Tailwind</div>
+                <div><i class="fa-solid fa-code text-purple-500 mr-1"></i> 开源分发：支持 GitHub Pages</div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 全局状态提示页脚 -->
+    <footer class="text-center py-4 text-xs text-slate-400 bg-white border-t border-slate-100 dark:bg-slate-800 dark:border-slate-700 transition-colors">
+        <p>控制台版本: v1.0.0 · 设备环境就绪</p>
+    </footer>
+
+    <script>
+        // --- DOM 获取 ---
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const themeIcon = document.getElementById('themeIcon');
+        const setThemeLight = document.getElementById('setThemeLight');
+        const setThemeDark = document.getElementById('setThemeDark');
+        const exportDataBtn = document.getElementById('exportDataBtn');
+        const importFileFileInput = document.getElementById('importFileFileInput');
+        const purgeStorageBtn = document.getElementById('purgeStorageBtn');
+
+        // --- 主题应用同步模块 ---
+        function applyAppTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                themeIcon.className = 'fa-solid fa-sun text-lg text-amber-400';
+                setThemeDark.className = "px-3 py-1.5 text-xs font-bold rounded-lg border border-indigo-600 bg-indigo-50 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-400 dark:border-indigo-500";
+                setThemeLight.className = "px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300";
+            } else {
+                document.documentElement.classList.remove('dark');
+                themeIcon.className = 'fa-solid fa-moon text-lg';
+                setThemeLight.className = "px-3 py-1.5 text-xs font-bold rounded-lg border border-indigo-600 bg-indigo-50 text-indigo-600";
+                setThemeDark.className = "px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300";
+            }

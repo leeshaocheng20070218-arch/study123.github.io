@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyHelper - 刷题题库</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://tailwindcss.com"></script>
+    <script>
+        // 配置 Tailwind 暗黑模式类名切换
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 min-h-screen transition-colors duration-200">
+
+    <!-- 顶部导航栏 -->
+    <nav class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <span class="text-2xl">📝</span>
+                    <span class="font-bold text-xl tracking-wide text-indigo-600 dark:text-indigo-400">StudyHelper</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-6 font-medium">
+                    <a href="index.html" class="text-gray-600 dark:text-gray-300 hover:text-indigo-600">首页</a>
+                    <a href="notes.html" class="text-gray-600 dark:text-gray-300 hover:text-indigo-600">笔记</a>
+                    <a href="practice.html" class="text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400 py-5">刷题</a>
+                    <a href="pomodoro.html" class="text-gray-600 dark:text-gray-300 hover:text-indigo-600">番茄钟</a>
+                    <a href="words.html" class="text-gray-600 dark:text-gray-300 hover:text-indigo-600">单词本</a>
+                    <a href="reader.html" class="text-gray-600 dark:text-gray-300 hover:text-indigo-600">阅读</a>
+                    <a href="tools.html" class="text-gray-600 dark:text-gray-300 hover:text-indigo-600">工具箱</a>
+                    <a href="settings.html" class="text-gray-600 dark:text-gray-300 hover:text-indigo-600">设置</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <!-- 暗黑模式切换按钮 -->
+                    <button id="themeToggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none">
+                        <span id="themeIcon">🌙</span>
+                    </button>
+                    <!-- 移动端菜单按钮 -->
+                    <button id="mobileMenuBtn" class="md:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- 移动端下拉菜单 -->
+        <div id="mobileMenu" class="hidden md:hidden bg-white dark:bg-gray-800 px-4 pt-2 pb-4 shadow-inner space-y-1">
+            <a href="index.html" class="block py-2 text-gray-600 dark:text-gray-300">首页</a>
+            <a href="notes.html" class="block py-2 text-gray-600 dark:text-gray-300">笔记</a>
+            <a href="practice.html" class="block py-2 font-bold text-indigo-600 dark:text-indigo-400">刷题</a>
+            <a href="pomodoro.html" class="block py-2 text-gray-600 dark:text-gray-300">番茄钟</a>
+            <a href="words.html" class="block py-2 text-gray-600 dark:text-gray-300">单词本</a>
+            <a href="reader.html" class="block py-2 text-gray-600 dark:text-gray-300">阅读</a>
+            <a href="tools.html" class="block py-2 text-gray-600 dark:text-gray-300">工具箱</a>
+            <a href="settings.html" class="block py-2 text-gray-600 dark:text-gray-300">设置</a>
+        </div>
+    </nav>
+
+    <!-- 主体内容 -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- 顶部数据看板 -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 text-center">
+                <p class="text-xs text-gray-400 dark:text-gray-500 uppercase font-bold">总题库量</p>
+                <p id="statTotalQuestions" class="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">0</p>
+            </div>
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 text-center">
+                <p class="text-xs text-gray-400 dark:text-gray-500 uppercase font-bold">累计刷题</p>
+                <p id="statTotalPracticed" class="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">0</p>
+            </div>
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 text-center">
+                <p class="text-xs text-gray-400 dark:text-gray-500 uppercase font-bold">答对题数</p>
+                <p id="statCorrectCount" class="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">0</p>
+            </div>
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 text-center">
+                <p class="text-xs text-gray-400 dark:text-gray-500 uppercase font-bold">总体正确率</p>
+                <p id="statAccuracy" class="text-2xl font-bold text-amber-500 mt-1">0%</p>
+            </div>
+        </div>
+
+        <!-- 标签页控制 -->
+        <div class="flex space-x-2 border-b border-gray-200 dark:border-gray-700 mb-6">
+            <button id="tabBtnPractice" class="py-2.5 px-4 font-medium text-sm border-b-2 border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400 focus:outline-none">🎯 随机刷题模式</button>
+            <button id="tabBtnWrong" class="py-2.5 px-4 font-medium text-sm border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none">❌ 错题本板块</button>
+            <button id="tabBtnManage" class="py-2.5 px-4 font-medium text-sm border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none">⚙️ 题库管理</button>
+        </div>
+
+        <!-- ==================== 1. 随机刷题面板 ==================== -->
+        <div id="panelPractice" class="block">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- 左侧/上方：核心答题卡片 -->
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+                        <!-- 题干状态条 -->
+                        <div class="flex justify-between items-center mb-4">
+                            <span id="practiceTypeBadge" class="px-2.5 py-1 text-xs font-semibold rounded bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300">单选题</span>
+                            <span id="practiceProgress" class="text-sm text-gray-400 dark:text-gray-500">第 0 / 0 题</span>
+                        </div>
+                        <!-- 题目文本 -->
+                        <div id="practiceQuestionText" class="text-lg font-medium mb-6 leading-relaxed">
+                            题库中暂无题目，请先前往“题库管理”录入题目！
+                        </div>
+                        <!-- 答题交互区 -->
+                        <div id="practiceOptionsContainer" class="space-y-3 mb-6">
+                            <!-- 动态生成选项或输入框 -->
+                        </div>
+                        <!-- 反馈提示区 -->
+                        <div id="practiceFeedback" class="hidden p-4 rounded-lg mb-6 border font-medium"></div>
+                        <!-- 操控按钮 -->
+                        <div class="flex justify-between items-center">
+                            <div class="space-x-2">
+                                <button id="btnPrev" class="px-4 py-2 text-sm font-medium bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors">上一题</button>
+                                <button id="btnNext" class="px-4 py-2 text-sm font-medium bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors">下一题</button>
+                            </div>
+                            <div class="space-x-2">
+                                <button id="btnCollectWrong" class="px-4 py-2 text-sm font-medium border border-amber-400 text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/20 rounded-lg transition-colors">⭐ 收藏错题</button>
+                                <button id="btnSubmitAnswer" class="px-5 py-2 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm transition-colors">提交答案</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 右侧/下方：刷题说明及快速操作 -->
+                <div class="space-y-4">
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+                        <h3 class="text-base font-bold mb-3">💡 刷题规则说明</h3>
+                        <ul class="text-sm text-gray-500 dark:text-gray-400 space-y-2 list-disc list-inside">
+                            <li>点击“提交答案”检查正确性并记录统计数据。</li>
+                            <li>单选题点击选项直接高亮，多选题可多选。</li>
+                            <li>填空题请在输入框内填入准确文本。</li>
+                            <li>答错的题会自动捕获，也可以手动点击收藏。</li>
+                        </ul>
+                        <hr class="my-4 border-gray-100 dark:border-gray-700">
+                        <button id="btnResetStats" class="w-full py-2 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 text-sm font-medium rounded-lg transition-colors">清空本次刷题统计数据</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== 2. 错题本板块 ==================== -->
+        <div id="panelWrong" class="hidden">

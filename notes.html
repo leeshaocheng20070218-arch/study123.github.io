@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyHelper - 笔记本</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://jsdelivr.net"></script>
+    <!-- FontAwesome 图标库 -->
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        /* 针对富文本编辑区的简单样式微调 */
+        .editor-content:empty:before {
+            content: attr(data-placeholder);
+            color: #9ca3af;
+        }
+        .dark .editor-content:empty:before {
+            color: #4b5563;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 min-h-screen transition-colors duration-200">
+
+    <!-- 顶部导航栏 -->
+    <nav class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <!-- 左侧 Logo 与名称 -->
+                <div class="flex items-center space-x-3">
+                    <div class="bg-indigo-600 text-white p-2 rounded-lg shadow-md flex items-center justify-center w-10 h-10">
+                        <i class="fa-solid fa-graduation-cap text-lg"></i>
+                    </div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent dark:from-indigo-400 dark:to-purple-400">StudyHelper</span>
+                </div>
+                <!-- 右侧全局控制 -->
+                <div class="flex items-center space-x-4">
+                    <!-- 暗黑模式切换按钮 -->
+                    <button id="themeToggleBtn" class="p-2 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition" title="切换主题">
+                        <i id="themeIcon" class="fa-solid fa-moon text-lg"></i>
+                    </button>
+                    <!-- 返回首页链接（此处预留，可根据实际项目结构调整路径） -->
+                    <a href="index.html" class="flex items-center space-x-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300">
+                        <i class="fa-solid fa-house"></i>
+                        <span class="hidden sm:inline">主页</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主体内容容器 -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- 页头功能区 -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-book-open text-indigo-500"></i> 我的笔记本
+                </h1>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">本地高效记录，数据自动保存不丢失</p>
+            </div>
+            <!-- 操作按钮与搜索 -->
+            <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                <!-- 搜索框 -->
+                <div class="relative flex-1 sm:w-64">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" id="searchInput" placeholder="搜索标题、内容或标签..." class="w-full pl-9 pr-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-xs">
+                </div>
+                <!-- 新建笔记按钮 -->
+                <button id="openModalBtn" class="flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-lg text-sm font-medium transition shadow-md shadow-indigo-100 dark:shadow-none">
+                    <i class="fa-solid fa-plus"></i> 新建笔记
+                </button>
+            </div>
+        </div>
+
+        <!-- 标签过滤器 -->
+        <div id="tagFilterContainer" class="flex flex-wrap items-center gap-2 mb-6 hidden">
+            <span class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mr-1">标签筛选:</span>
+            <button class="tag-filter-btn px-3 py-1 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-900 rounded-full text-xs font-medium cursor-pointer active" data-tag="all">全部</button>
+            <!-- 动态渲染的其他标签将插入此处 -->
+        </div>
+
+        <!-- 笔记列表渲染区域 -->
+        <div id="notesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- 动态加载卡片，空状态提示将在没有数据时显示 -->
+        </div>
+
+        <!-- 空状态缺省提示 -->
+        <div id="emptyState" class="hidden flex flex-col items-center justify-center py-20 text-center">
+            <div class="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4 text-gray-400 dark:text-gray-600">
+                <i class="fa-solid fa-note-sticky text-4xl"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">暂无任何笔记</h3>
+            <p class="text-sm text-gray-400 dark:text-gray-500 mt-1 max-w-xs">点击右上角的“新建笔记”按钮，开始记录你的第一条学习心得吧！</p>
+        </div>
+    </main>
+
+    <!-- 新建/编辑笔记 模态弹窗 -->
+    <div id="noteModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
+        <!-- 遮罩层 -->
+        <div class="fixed inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-xs transition-opacity"></div>
+        
+        <!-- 弹窗主体 -->
+        <div class="flex min-h-full items-center justify-center p-4 sm:p-6 lg:p-8">
+            <div class="relative transform overflow-hidden rounded-xl bg-white dark:bg-gray-800 text-left shadow-2xl transition-all w-full max-w-3xl border border-gray-100 dark:border-gray-700 flex flex-col my-8">
+                <!-- 弹窗头部 -->
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-800/50">
+                    <h3 id="modalTitle" class="text-lg font-bold text-gray-900 dark:text-white">新建笔记</h3>
+                    <button id="closeModalBtn" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+                
+                <!-- 弹窗表单内容 -->
+                <div class="p-6 space-y-4 flex-1">
+                    <!-- 隐藏的笔记ID，用于判断是新建还是修改 -->
+                    <input type="hidden" id="noteId">
+                    
+                    <!-- 标题输入 -->
+                    <div>
+                        <label for="noteTitle" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">标题</label>
+                        <input type="text" id="noteTitle" placeholder="请输入笔记标题..." class="w-full px-4 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                    </div>
+
+                    <!-- 标签输入 -->
+                    <div>
+                        <label for="noteTags" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">分类标签 (多个用逗号或空格隔开)</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                                <i class="fa-solid fa-tags text-xs"></i>
+                            </span>
+                            <input type="text" id="noteTags" placeholder="例如: 数学, 公事, 重要" class="w-full pl-9 pr-4 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        </div>
+                    </div>
+
+                    <!-- 富文本简易工具栏 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">笔记正文</label>
+                        <div class="border border-gray-300 dark:border-gray-700 rounded-t-lg bg-gray-50 dark:bg-gray-900 p-2 flex flex-wrap items-center gap-1 border-b-0">
+                            <button type="button" onclick="formatDoc('bold')" class="p-1.5 rounded-sm text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition text-sm w-8 h-8" title="加粗"><i class="fa-solid fa-bold"></i></button>
+                            <button type="button" onclick="formatDoc('italic')" class="p-1.5 rounded-sm text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition text-sm w-8 h-8" title="斜体"><i class="fa-solid fa-italic"></i></button>
+                            <button type="button" onclick="formatDoc('underline')" class="p-1.5 rounded-sm text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition text-sm w-8 h-8" title="下划线"><i class="fa-solid fa-underline"></i></button>
+                            <button type="button" onclick="formatDoc('strikeThrough')" class="p-1.5 rounded-sm text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition text-sm w-8 h-8" title="删除线"><i class="fa-solid fa-strikethrough"></i></button>
+                            <div class="h-4 w-px bg-gray-300 dark:bg-gray-700 mx-1"></div>

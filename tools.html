@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习小工具 - StudyHelper</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://jsdelivr.net"></script>
+    <!-- FontAwesome 图标 -->
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        /* 隐藏滚动条但保持可滚动 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col transition-colors duration-300 dark:bg-slate-900 dark:text-slate-100">
+
+    <!-- 顶部导航栏 -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 dark:bg-slate-800 dark:border-slate-700 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <a href="index.html" class="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+                    <i class="fa-solid fa-arrow-left text-lg"></i>
+                </a>
+                <i class="fa-solid fa-screwdriver-wrench text-indigo-600 text-2xl dark:text-indigo-400"></i>
+                <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">学习小工具</h1>
+            </div>
+            <div class="flex items-center space-x-3">
+                <!-- 暗黑模式切换 -->
+                <button id="themeToggleBtn" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700 transition-colors" title="切换主题">
+                    <i id="themeIcon" class="fa-solid fa-moon text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主体工具箱网格 -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- 1. 待办清单卡片 -->
+        <section class="bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col h-[600px] overflow-hidden dark:bg-slate-800 dark:border-slate-700">
+            <div class="p-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/20">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-list-check text-emerald-500 text-lg"></i>
+                    <h2 class="font-bold text-slate-800 dark:text-white">任务待办清单</h2>
+                </div>
+                <span id="todoCountTag" class="text-xs bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full font-semibold dark:bg-emerald-950/40 dark:text-emerald-400">0 项存留</span>
+            </div>
+            
+            <!-- 待办输入栏 -->
+            <div class="p-4 border-b border-slate-100 dark:border-slate-700">
+                <form id="todoForm" class="flex gap-2" onsubmit="event.preventDefault();">
+                    <input id="todoInput" type="text" placeholder="添加一个新的今日学习任务..." required maxlength="40" class="flex-1 px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:bg-white dark:bg-slate-900 dark:border-slate-700 dark:focus:bg-slate-900 dark:text-white transition-all">
+                    <button type="submit" id="addTodoBtn" class="bg-emerald-500 hover:bg-emerald-600 text-white text-sm px-3.5 rounded-xl transition-colors font-medium shrink-0">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- 待办列表滚动区 -->
+            <div id="todoListArea" class="flex-1 p-4 overflow-y-auto no-scrollbar space-y-2.5">
+                <!-- 缺省提示 -->
+                <div id="todoEmptyState" class="h-full flex flex-col items-center justify-center text-center text-slate-400">
+                    <i class="fa-regular fa-circle-check text-3xl mb-2 text-slate-300"></i>
+                    <p class="text-xs">暂无待办任务，放松一下吧！</p>
+                </div>
+                <!-- 动态列表插槽 -->
+                <ul id="todoListContainer" class="space-y-2"></ul>
+            </div>
+        </section>
+
+        <!-- 2. 简易计算器卡片 -->
+        <section class="bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col h-[600px] overflow-hidden dark:bg-slate-800 dark:border-slate-700">
+            <div class="p-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/20">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-calculator text-blue-500 text-lg"></i>
+                    <h2 class="font-bold text-slate-800 dark:text-white">简易科学计算器</h2>
+                </div>
+                <span class="text-xs text-slate-400">支持键盘输入</span>
+            </div>
+
+            <!-- 计算器显示屏 -->
+            <div class="p-4 bg-slate-900 text-right flex flex-col justify-end h-28 font-mono select-all">
+                <div id="calcHistory" class="text-slate-500 text-sm overflow-x-auto whitespace-nowrap tracking-wide h-6"></div>
+                <div id="calcScreen" class="text-white text-2xl font-bold tracking-tight overflow-x-auto whitespace-nowrap mt-1">0</div>
+            </div>
+
+            <!-- 计算器按键面板 -->
+            <div class="flex-1 p-4 grid grid-cols-4 gap-2 bg-slate-50 dark:bg-slate-900/40">
+                <!-- 第一行 -->
+                <button data-val="C" class="bg-red-100 hover:bg-red-200 text-red-600 rounded-xl font-bold transition-colors text-sm dark:bg-red-950/40 dark:text-red-400">C</button>
+                <button data-val="()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl font-bold transition-colors text-sm dark:bg-slate-700 dark:text-slate-300">(</button>
+                <button data-val=")" class="bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl font-bold transition-colors text-sm dark:bg-slate-700 dark:text-slate-300">)</button>
+                <button data-val="/" class="bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-xl font-bold transition-colors text-base dark:bg-blue-950/40 dark:text-blue-400">÷</button>
+                
+                <!-- 第二行 -->
+                <button data-val="7" class="bg-white hover:bg-slate-100 border border-slate-200 rounded-xl font-semibold text-slate-700 transition-colors text-base dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700">7</button>
+                <button data-val="8" class="bg-white hover:bg-slate-100 border border-slate-200 rounded-xl font-semibold text-slate-700 transition-colors text-base dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700">8</button>
+                <button data-val="9" class="bg-white hover:bg-slate-100 border border-slate-200 rounded-xl font-semibold text-slate-700 transition-colors text-base dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700">9</button>
+                <button data-val="*" class="bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-xl font-bold transition-colors text-base dark:bg-blue-950/40 dark:text-blue-400">×</button>
+
+                <!-- 第三行 -->
+                <button data-val="4" class="bg-white hover:bg-slate-100 border border-slate-200 rounded-xl font-semibold text-slate-700 transition-colors text-base dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700">4</button>
+                <button data-val="5" class="bg-white hover:bg-slate-100 border border-slate-200 rounded-xl font-semibold text-slate-700 transition-colors text-base dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700">5</button>
+                <button data-val="6" class="bg-white hover:bg-slate-100 border border-slate-200 rounded-xl font-semibold text-slate-700 transition-colors text-base dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700">6</button>
+                <button data-val="-" class="bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-xl font-bold transition-colors text-base dark:bg-blue-950/40 dark:text-blue-400">-</button>
+
+                <!-- 第四行 -->
+                <button data-val="1" class="bg-white hover:bg-slate-100 border border-slate-200 rounded-xl font-semibold text-slate-700 transition-colors text-base dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700">1</button>
+                <button data-val="2" class="bg-white hover:bg-slate-100 border border-slate-200 rounded-xl font-semibold text-slate-700 transition-colors text-base dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700">2</button>
+                <button data-val="3" class="bg-white hover:bg-slate-100 border border-slate-200 rounded-xl font-semibold text-slate-700 transition-colors text-base dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700">3</button>
+                <button data-val="+" class="bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-xl font-bold transition-colors text-base dark:bg-blue-950/40 dark:text-blue-400">+</button>
+
+                <!-- 第五行 -->
+                <button data-val="0" class="bg-white hover:bg-slate-100 border border-slate-200 rounded-xl font-semibold text-slate-700 transition-colors text-base dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700">0</button>
+                <button data-val="." class="bg-white hover:bg-slate-100 border border-slate-200 rounded-xl font-semibold text-slate-700 transition-colors text-base dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700">.</button>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyHelper - 纯静态本地学习辅助助手</title>
+    <!-- 引入 Tailwind CSS v3 CDN -->
+    <script src="https://tailwindcss.com"></script>
+    <script>
+        // 配置 Tailwind 主题扩展，打造简洁清爽学生风
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome 图标库 CDN -->
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        /* 隐藏滚动条但保持可滚动 */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        /* 简单富文本编辑区域样式 */
+        .editor-content:empty:before { content: attr(placeholder); color: #9ca3af; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
+
+    <!-- 全局顶部导航栏 -->
+    <header class="bg-white dark:bg-slate-800 shadow-sm sticky top-0 z-40 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Logo 与名称 -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchPage('home')">
+                <div class="bg-brand-500 text-white p-2 rounded-xl shadow-md shadow-brand-500/20">
+                    <i class="fa-solid fa-graduation-cap text-xl"></i>
+                </div>
+                <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-brand-600 to-blue-500 bg-clip-text text-transparent dark:from-brand-400 dark:to-blue-400">StudyHelper</span>
+            </div>
+
+            <!-- 桌面端主导航 -->
+            <nav class="hidden md:flex space-x-1 lg:space-x-2">
+                <button onclick="switchPage('home')" data-nav="home" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-brand-600 bg-brand-50 dark:text-brand-400 dark:bg-slate-700/50">首页</button>
+                <button onclick="switchPage('notes')" data-nav="notes" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-brand-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-brand-400 dark:hover:bg-slate-700">笔记</button>
+                <button onclick="switchPage('questions')" data-nav="questions" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-brand-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-brand-400 dark:hover:bg-slate-700">刷题</button>
+                <button onclick="switchPage('pomodoro')" data-nav="pomodoro" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-brand-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-brand-400 dark:hover:bg-slate-700">番茄钟</button>
+                <button onclick="switchPage('words')" data-nav="words" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-brand-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-brand-400 dark:hover:bg-slate-700">单词本</button>
+                <button onclick="switchPage('reader')" data-nav="reader" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-brand-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-brand-400 dark:hover:bg-slate-700">阅读器</button>
+                <button onclick="switchPage('toolbox')" data-nav="toolbox" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-brand-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-brand-400 dark:hover:bg-slate-700">工具箱</button>
+                <button onclick="switchPage('settings')" data-nav="settings" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-brand-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-brand-400 dark:hover:bg-slate-700">设置</button>
+            </nav>
+
+            <!-- 右侧快捷控制区 -->
+            <div class="flex items-center space-x-3">
+                <button id="themeToggleBtn" class="p-2 text-slate-500 hover:text-brand-500 rounded-xl hover:bg-slate-100 dark:text-slate-400 dark:hover:text-brand-400 dark:hover:bg-slate-700 transition-colors" title="切换主题">
+                    <i class="fa-solid fa-moon text-lg dark:hidden"></i>
+                    <i class="fa-solid fa-sun text-lg hidden dark:block"></i>
+                </button>
+                <button class="md:hidden p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl" onclick="toggleMobileMenu()">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 移动端下拉菜单 -->
+        <div id="mobileMenu" class="hidden md:hidden border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 space-y-1">
+            <button onclick="switchPage('home'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-lg text-base font-medium text-slate-600 dark:text-slate-300">首页导航</button>
+            <button onclick="switchPage('notes'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-lg text-base font-medium text-slate-600 dark:text-slate-300">笔记系统</button>
+            <button onclick="switchPage('questions'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-lg text-base font-medium text-slate-600 dark:text-slate-300">刷题题库</button>
+            <button onclick="switchPage('pomodoro'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-lg text-base font-medium text-slate-600 dark:text-slate-300">番茄计时</button>
+            <button onclick="switchPage('words'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-lg text-base font-medium text-slate-600 dark:text-slate-300">单词背诵</button>
+            <button onclick="switchPage('reader'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-lg text-base font-medium text-slate-600 dark:text-slate-300">文本阅读</button>
+            <button onclick="switchPage('toolbox'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-lg text-base font-medium text-slate-600 dark:text-slate-300">学习工具</button>
+            <button onclick="switchPage('settings'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-lg text-base font-medium text-slate-600 dark:text-slate-300">系统设置</button>
+        </div>
+    </header>
+
+    <!-- 全局核心内容容器 -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
+
+        <!-- ================= 1. 首页导航模块 ================= -->
+        <section id="page-home" class="page-section space-y-8">
+            <div class="bg-gradient-to-r from-brand-500 to-blue-600 rounded-2xl p-6 sm:p-8 text-white shadow-xl shadow-brand-500/10 relative overflow-hidden">
+                <div class="relative z-10 max-w-2xl">
+                    <h1 class="text-2xl sm:text-4xl font-bold mb-3">欢迎使用 StudyHelper 学习助手</h1>
+                    <p class="text-brand-100 text-sm sm:text-base mb-6">这是一个完全运行在本地、绝不上传隐私的纯净学习空间。高效专注，从现在开始！</p>
+                    <div id="homeQuote" class="italic text-xs sm:text-sm bg-black/10 p-3 rounded-lg border-l-4 border-white/40">“书山有路勤为径，学海无涯苦作舟。”</div>
+                </div>
+                <i class="fa-solid fa-graduation-cap text-9xl absolute -right-4 -bottom-4 opacity-10 pointer-events-none"></i>
+            </div>
+            
+            <!-- 仪表盘统计卡片 -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 flex items-center space-x-4">
+                    <div class="p-3 bg-blue-50 dark:bg-blue-900/30 text-blue-500 rounded-xl"><i class="fa-solid fa-book text-xl"></i></div>
+                    <div><div class="text-xs text-slate-400 dark:text-slate-500">笔记总数</div><div id="statNotes" class="text-xl font-bold">0</div></div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 flex items-center space-x-4">
+                    <div class="p-3 bg-green-50 dark:bg-green-900/30 text-green-500 rounded-xl"><i class="fa-solid fa-pen-to-square text-xl"></i></div>
+                    <div><div class="text-xs text-slate-400 dark:text-slate-500">题库总数</div><div id="statQuestions" class="text-xl font-bold">0</div></div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 flex items-center space-x-4">
+                    <div class="p-3 bg-purple-50 dark:bg-purple-900/30 text-purple-500 rounded-xl"><i class="fa-solid fa-clock text-xl"></i></div>
+                    <div><div class="text-xs text-slate-400 dark:text-slate-500">专注时长</div><div id="statFocus" class="text-xl font-bold">0 分钟</div></div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 flex items-center space-x-4">
+                    <div class="p-3 bg-amber-50 dark:bg-amber-900/30 text-amber-500 rounded-xl"><i class="fa-solid fa-language text-xl"></i></div>
+                    <div><div class="text-xs text-slate-400 dark:text-slate-500">词汇总量</div><div id="statWords" class="text-xl font-bold">0</div></div>
+                </div>
+            </div>
+
+            <!-- 功能导航卡片群 -->
+            <div>

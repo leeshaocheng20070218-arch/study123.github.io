@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyHelper - 番茄专注计时器</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://jsdelivr.net"></script>
+    <!-- FontAwesome 图标库 -->
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        /* 针对不支持原生 Tailwind 黑暗模式的微调 */
+        .dark {
+            background-color: #111827;
+            color: #f9fafb;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100 min-h-screen flex flex-col">
+
+    <!-- 顶部导航栏 -->
+    <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 bg-red-500 rounded-lg flex items-center justify-center text-white shadow-md">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </div>
+                <span class="text-xl font-bold text-gray-900 dark:text-white tracking-wide">StudyHelper</span>
+            </div>
+            
+            <nav class="hidden md:flex space-x-1 text-sm font-medium">
+                <a href="index.html" class="px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">首页</a>
+                <a href="notes.html" class="px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">笔记本</a>
+                <a href="practice.html" class="px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">刷题库</a>
+                <a href="tomato.html" class="px-3 py-2 rounded-lg bg-red-50 text-red-600 dark:bg-red-950/50 dark:text-red-400">番茄钟</a>
+                <a href="words.html" class="px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">单词本</a>
+                <a href="reader.html" class="px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">阅读器</a>
+                <a href="tools.html" class="px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">工具箱</a>
+                <a href="settings.html" class="px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">设置</a>
+            </nav>
+
+            <div class="flex items-center space-x-3">
+                <button id="themeToggle" class="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                    <i class="fa-solid fa-moon dark:hidden"></i>
+                    <i class="fa-solid fa-sun hidden dark:block"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主体内容区域 -->
+    <main class="flex-grow max-w-5xl w-full mx-auto px-4 py-8" id="mainContainer">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- 左侧核心计时面板 -->
+            <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-8 flex flex-col items-center justify-center relative transition-all duration-300" id="timerCard">
+                
+                <!-- 全屏状态下的退出按钮 -->
+                <button id="exitFullscreenBtn" class="hidden absolute top-6 right-6 p-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-200 rounded-full transition shadow">
+                    <i class="fa-solid fa-compress text-lg"></i>
+                </button>
+
+                <!-- 模式切换标签 -->
+                <div class="flex space-x-2 bg-gray-100 dark:bg-gray-700 p-1.5 rounded-xl mb-12" id="modeTabs">
+                    <button id="workModeTab" class="px-5 py-2 rounded-lg text-sm font-semibold shadow-sm transition bg-white text-red-600 dark:bg-gray-600 dark:text-white">
+                        <i class="fa-solid fa-brain mr-1.5"></i>专注阶段
+                    </button>
+                    <button id="breakModeTab" class="px-5 py-2 rounded-lg text-sm font-semibold transition text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+                        <i class="fa-solid fa-mug-hot mr-1.5"></i>休息时间
+                    </button>
+                </div>
+
+                <!-- 倒计时大数字显示 -->
+                <div class="relative flex items-center justify-center w-72 h-72 mb-10 select-none">
+                    <!-- 极简圆形背景轨 -->
+                    <div class="absolute inset-0 border-[6px] border-gray-100 dark:border-gray-700 rounded-full"></div>
+                    <div id="timerDisplay" class="text-7xl font-light font-mono text-gray-800 dark:text-gray-50 tracking-tighter">
+                        25:00
+                    </div>
+                </div>
+
+                <!-- 提醒标语 -->
+                <div id="statusMessage" class="text-center font-medium text-gray-500 dark:text-gray-400 mb-8 h-6">
+                    保持专心，高效每一分钟
+                </div>
+
+                <!-- 控制按钮组 -->
+                <div class="flex items-center space-x-4 mb-6">
+                    <button id="resetTimerBtn" class="w-12 h-12 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-200 rounded-xl transition flex items-center justify-center shadow-sm" title="重置">
+                        <i class="fa-solid fa-arrow-rotate-left"></i>
+                    </button>
+                    
+                    <button id="startPauseBtn" class="px-10 py-3.5 bg-red-500 hover:bg-red-600 active:scale-98 text-white rounded-xl font-medium shadow-md shadow-red-500/20 transition flex items-center space-x-2">
+                        <i id="playIcon" class="fa-solid fa-play"></i>
+                        <span id="startPauseText">开始专注</span>
+                    </button>
+
+                    <button id="enterFullscreenBtn" class="w-12 h-12 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-200 rounded-xl transition flex items-center justify-center shadow-sm" title="全屏专注模式">
+                        <i class="fa-solid fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 右侧数据看板与参数设置 -->
+            <div class="space-y-6 lg:col-span-1" id="configCard">
+                
+                <!-- 统计看板 -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                    <h3 class="text-base font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                        <i class="fa-solid fa-chart-simple text-red-500 mr-2"></i>专注看板
+                    </h3>
+                    <div class="grid grid-cols-2 gap-4 text-center">
+                        <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl border border-gray-100/50 dark:border-gray-700">
+                            <p class="text-xs text-gray-400 dark:text-gray-400 mb-1">今日累计</p>
+                            <p class="text-2xl font-bold font-mono text-red-500" id="todayMinutes">0</p>
+                            <p class="text-[10px] text-gray-400 mt-1">分钟</p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl border border-gray-100/50 dark:border-gray-700">
+                            <p class="text-xs text-gray-400 dark:text-gray-400 mb-1">历史总计</p>
+                            <p class="text-2xl font-bold font-mono text-gray-700 dark:text-gray-200" id="totalMinutes">0</p>
+                            <p class="text-[10px] text-gray-400 mt-1">分钟</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 自定义设置选项 -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                    <h3 class="text-base font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                        <i class="fa-solid fa-sliders text-gray-500 dark:text-gray-400 mr-2"></i>时长微调
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between items-center mb-1.5">
+                                <label class="text-xs font-semibold text-gray-500 dark:text-gray-400">专注时长</label>
+                                <span class="text-xs font-bold font-mono text-red-500" id="workValDisplay">25 分钟</span>
+                            </div>
+                            <input type="range" id="workInput" min="1" max="60" value="25" class="w-full accent-red-500 bg-gray-200 dark:bg-gray-700 h-1.5 rounded-lg cursor-pointer">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between items-center mb-1.5">
+                                <label class="text-xs font-semibold text-gray-500 dark:text-gray-400">休息时长</label>
+                                <span class="text-xs font-bold font-mono text-teal-500" id="breakValDisplay">5 分钟</span>
+                            </div>
+                            <input type="range" id="breakInput" min="1" max="30" value="5" class="w-full accent-teal-500 bg-gray-200 dark:bg-gray-700 h-1.5 rounded-lg cursor-pointer">
+                        </div>
+                    </div>
+
+                    <button id="saveConfigBtn" class="mt-6 w-full py-2.5 bg-gray-800 hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600 text-white rounded-xl text-xs font-medium transition shadow-sm">
+                        应用并保存设置
+                    </button>
+                </div>
+
